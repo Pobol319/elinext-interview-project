@@ -1,5 +1,5 @@
 package by.devincubator.pobol.scope;
 
-public enum ScopeEnum {
+public enum BeanScopeEnum {
     SINGLETON, PROTOTYPE
 }
