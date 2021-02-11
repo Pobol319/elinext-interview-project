@@ -12,9 +12,9 @@ import java.lang.reflect.Constructor;
 import java.util.*;
 
 public class InjectorImpl implements Injector {
-    private final Map<Class, Class> beanBindings;
-    private final Map<Class, BeanScopeEnum> beanScopes;
-    private final Map<Class, Provider> iocContainer;
+    private final Map<String, Class> beanBindings;
+    private final Map<String, BeanScopeEnum> beanScopes;
+    private final Map<String, Provider> iocContainer;
 
     public InjectorImpl() {
         beanBindings = new HashMap<>();
@@ -24,31 +24,31 @@ public class InjectorImpl implements Injector {
 
     public synchronized <T> Provider<T> getProvider(Class<T> type) {
 
-        if (!beanBindings.containsKey(type)) {
+        if (!beanBindings.containsKey(type.toString())) {
             return null;
         }
 
-        if (iocContainer.containsKey(type)) {
-            return iocContainer.get(type);
+        if (iocContainer.containsKey(type.toString())) {
+            return iocContainer.get(type.toString());
         }
 
         final Provider<T> provider = createProvider(type);
 
-        iocContainer.put(type, provider);
+        iocContainer.put(type.toString(), provider);
 
         return provider;
     }
 
     public <T> void bind(Class<T> intf, Class<? extends T> impl) {
         getDefaultOrInjectAnnotatedConstructor(impl);
-        beanScopes.put(intf, BeanScopeEnum.PROTOTYPE);
-        beanBindings.put(intf, impl);
+        beanScopes.put(intf.toString(), BeanScopeEnum.PROTOTYPE);
+        beanBindings.put(intf.toString(), impl);
     }
 
     public <T> void bindSingleton(Class<T> intf, Class<? extends T> impl) {
         getDefaultOrInjectAnnotatedConstructor(impl);
-        beanScopes.put(intf, BeanScopeEnum.SINGLETON);
-        beanBindings.put(intf, impl);
+        beanScopes.put(intf.toString(), BeanScopeEnum.SINGLETON);
+        beanBindings.put(intf.toString(), impl);
     }
 
     /**
@@ -58,13 +58,13 @@ public class InjectorImpl implements Injector {
      * @return set up Provider
      */
     private <T> Provider<T> createProvider(Class<T> type) {
-        Constructor constructor = getDefaultOrInjectAnnotatedConstructor(beanBindings.get(type));
+        Constructor constructor = getDefaultOrInjectAnnotatedConstructor(beanBindings.get(type.toString()));
         Class[] parameterizedTypes = constructor.getParameterTypes();
         Provider<T> provider;
 
         if (parameterizedTypes.length != 0) {
             for (Class parameterizedType : parameterizedTypes) {
-                if (!beanBindings.containsKey(parameterizedType)) {
+                if (!beanBindings.containsKey(parameterizedType.toString())) {
                     throw new BindingNotFoundException("Not found Binding for" + type);
                 }
             }
@@ -75,9 +75,9 @@ public class InjectorImpl implements Injector {
                 instancesOfParameterizedTypes.add(getProvider(parameterizedType).getInstance());
             }
 
-            provider = new ProviderImpl(constructor, beanScopes.get(type), instancesOfParameterizedTypes.toArray());
+            provider = new ProviderImpl(constructor, beanScopes.get(type.toString()), instancesOfParameterizedTypes.toArray());
         } else {
-            provider = new ProviderImpl(constructor, beanScopes.get(type), null);
+            provider = new ProviderImpl(constructor, beanScopes.get(type.toString()), null);
         }
 
         return provider;
