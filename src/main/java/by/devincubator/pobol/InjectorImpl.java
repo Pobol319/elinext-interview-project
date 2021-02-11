@@ -30,28 +30,7 @@ public class InjectorImpl implements Injector {
             return iocContainer.get(type);
         }
 
-        Constructor constructor = getDefaultOrInjectAnnotatedConstructor(beanBindings.get(type));
-        Class[] parameterizedTypes = constructor.getParameterTypes();
-
-        Provider<T> provider;
-
-        if (parameterizedTypes.length != 0) {
-            for (Class parameterizedType : parameterizedTypes) {
-                if (!beanBindings.containsKey(parameterizedType)) {
-                    throw new BindingNotFoundException("Not found Binding for" + type);
-                }
-            }
-
-            List<Object> instancesOfParameterizedTypes = new ArrayList<Object>();
-
-            for (Class parameterizedType : parameterizedTypes) {
-                instancesOfParameterizedTypes.add(getProvider(parameterizedType).getInstance());
-            }
-
-            provider = new ProviderImpl(constructor, beanScopes.get(type), instancesOfParameterizedTypes.toArray());
-        } else {
-            provider = new ProviderImpl(constructor, beanScopes.get(type), null);
-        }
+        final Provider<T> provider = createProvider(type);
 
         iocContainer.put(type, provider);
 
@@ -70,6 +49,46 @@ public class InjectorImpl implements Injector {
         beanBindings.put(intf, impl);
     }
 
+    /**
+     * Create Provider for given interface type
+     * @param type - interface to create Provider for
+     * @param <T> - interface type
+     * @return set up Provider
+     */
+    private <T> Provider<T> createProvider(Class<T> type) {
+        Constructor constructor = getDefaultOrInjectAnnotatedConstructor(beanBindings.get(type));
+        Class[] parameterizedTypes = constructor.getParameterTypes();
+        Provider<T> provider;
+
+        if (parameterizedTypes.length != 0) {
+            for (Class parameterizedType : parameterizedTypes) {
+                if (!beanBindings.containsKey(parameterizedType)) {
+                    throw new BindingNotFoundException("Not found Binding for" + type);
+                }
+            }
+
+            final List<Object> instancesOfParameterizedTypes = new ArrayList<Object>();
+
+            for (Class parameterizedType : parameterizedTypes) {
+                instancesOfParameterizedTypes.add(getProvider(parameterizedType).getInstance());
+            }
+
+            provider = new ProviderImpl(constructor, beanScopes.get(type), instancesOfParameterizedTypes.toArray());
+        } else {
+            provider = new ProviderImpl(constructor, beanScopes.get(type), null);
+        }
+
+        return provider;
+    }
+
+    /**
+     * If default or one injected constructor exists - return it, otherwise throw related exception
+     * @param impl concrete implementation class of interface
+     * @param <T> implementation type
+     * @return suitable constructor
+     * @throws TooManyConstructorsException
+     * @throws ConstructorNotFoundException
+     */
     private <T> Constructor getDefaultOrInjectAnnotatedConstructor(Class<? extends T> impl) throws TooManyConstructorsException, ConstructorNotFoundException {
         final Constructor[] existingConstructors = impl.getConstructors();
 
@@ -77,6 +96,12 @@ public class InjectorImpl implements Injector {
         return oneInjectConstructorOpt.orElseGet(() -> getDefaultConstructor(existingConstructors));
     }
 
+    /**
+     * If injected constructor exists - return it, otherwise throw related exception
+     * @param existingConstructors - all existing constructors, that class have
+     * @return injected constructor
+     * @throws TooManyConstructorsException
+     */
     private Constructor getOneInjectConstructor(Constructor[] existingConstructors) throws TooManyConstructorsException {
         Constructor oneInjectConstructor = null;
 
@@ -93,6 +118,12 @@ public class InjectorImpl implements Injector {
         return oneInjectConstructor;
     }
 
+    /**
+     * If default constructor exists - return it, otherwise throw related exception
+     * @param existingConstructors - all existing constructors, that class have
+     * @return default constructor
+     * @throws ConstructorNotFoundException
+     */
     private Constructor getDefaultConstructor(Constructor[] existingConstructors) throws ConstructorNotFoundException {
         Optional<Constructor> defaultConstructor = Arrays.stream(existingConstructors).filter(constr -> constr.getParameterTypes().length == 0).findFirst();
         if (defaultConstructor.isPresent()) {

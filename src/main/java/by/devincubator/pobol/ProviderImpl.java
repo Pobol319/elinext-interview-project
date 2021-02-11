@@ -6,12 +6,12 @@ import by.devincubator.pobol.scope.BeanScopeEnum;
 import java.lang.reflect.Constructor;
 
 public class ProviderImpl<T> implements Provider<T> {
-    private Constructor<T> constructor;
-    private BeanScopeEnum scope;
-    private Object[] newInstanceParameters;
+    private final Constructor<T> constructor;
+    private final BeanScopeEnum scope;
+    private final Object[] newInstanceParameters;
     private T instance = null;
 
-    public ProviderImpl( Constructor<T> constructor, BeanScopeEnum scope, Object[] newInstanceParameters) {
+    public ProviderImpl(Constructor<T> constructor, BeanScopeEnum scope, Object[] newInstanceParameters) {
         this.constructor = constructor;
         this.scope = scope;
         this.newInstanceParameters = newInstanceParameters;
@@ -28,7 +28,12 @@ public class ProviderImpl<T> implements Provider<T> {
         }
     }
 
-    private T createNewInstance() throws ProviderNewInstanceException{
+    /**
+     * Create new instance with given parameters
+     * @return new instance
+     * @throws ProviderNewInstanceException
+     */
+    private T createNewInstance() throws ProviderNewInstanceException {
         T newInstance;
         try {
             newInstance = constructor.newInstance(newInstanceParameters);

@@ -1,9 +1,7 @@
 package by.devincubator.pobol;
 
-import by.devincubator.pobol.exception.ProviderNewInstanceException;
 import by.devincubator.pobol.scope.BeanScopeEnum;
-import by.devincubator.pobol.testData.InterfaceB;
-import by.devincubator.pobol.testData.InterfaceBImpl;
+import by.devincubator.pobol.data.InterfaceBImpl;
 import org.junit.BeforeClass;
 import org.junit.Test;
 

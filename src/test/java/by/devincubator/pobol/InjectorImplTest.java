@@ -1,9 +1,9 @@
 package by.devincubator.pobol;
 
+import by.devincubator.pobol.data.*;
 import by.devincubator.pobol.exception.BindingNotFoundException;
 import by.devincubator.pobol.exception.ConstructorNotFoundException;
 import by.devincubator.pobol.exception.TooManyConstructorsException;
-import by.devincubator.pobol.testData.*;
 import org.junit.Test;
 
 import static junit.framework.TestCase.assertNotNull;

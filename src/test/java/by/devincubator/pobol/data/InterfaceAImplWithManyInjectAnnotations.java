@@ -1,4 +1,4 @@
-package by.devincubator.pobol.testData;
+package by.devincubator.pobol.data;
 
 import by.devincubator.pobol.annotation.Inject;
 
