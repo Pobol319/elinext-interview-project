@@ -1,5 +1,6 @@
-package by.devincubator.pobol;
+package by.devincubator.pobol.container.impl;
 
+import by.devincubator.pobol.container.Provider;
 import by.devincubator.pobol.exception.ProviderNewInstanceException;
 import by.devincubator.pobol.scope.BeanScopeEnum;
 

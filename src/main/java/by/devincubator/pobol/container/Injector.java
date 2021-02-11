@@ -1,4 +1,4 @@
-package by.devincubator.pobol;
+package by.devincubator.pobol.container;
 
 public interface Injector {
     <T> Provider<T> getProvider(Class<T> type);

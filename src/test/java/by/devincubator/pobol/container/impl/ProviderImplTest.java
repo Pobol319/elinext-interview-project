@@ -1,7 +1,8 @@
-package by.devincubator.pobol;
+package by.devincubator.pobol.container.impl;
 
+import by.devincubator.pobol.container.Provider;
 import by.devincubator.pobol.scope.BeanScopeEnum;
-import by.devincubator.pobol.data.InterfaceBImpl;
+import by.devincubator.pobol.data.impl.InterfaceBImpl;
 import org.junit.BeforeClass;
 import org.junit.Test;
 

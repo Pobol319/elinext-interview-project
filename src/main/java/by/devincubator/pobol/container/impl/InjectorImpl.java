@@ -1,6 +1,8 @@
-package by.devincubator.pobol;
+package by.devincubator.pobol.container.impl;
 
 import by.devincubator.pobol.annotation.Inject;
+import by.devincubator.pobol.container.Injector;
+import by.devincubator.pobol.container.Provider;
 import by.devincubator.pobol.exception.BindingNotFoundException;
 import by.devincubator.pobol.exception.ConstructorNotFoundException;
 import by.devincubator.pobol.exception.TooManyConstructorsException;
